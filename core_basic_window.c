@@ -1,18 +1,10 @@
 /*
- * Harry Potter: A Busca pela Pedra Filosofal
- * Jogo 2D em C com raylib
- *
- * Estruturas:
+ * Estruturas que usei:
  *  - Lista encadeada de SALAS (lista principal)
  *  - Cada sala possui LISTAS encadeadas de ITENS e de INIMIGOS (lista de listas)
  *  - Struct Jogador (vidas, pontuacao, itens coletados)
  *  - Bubble Sort para o ranking (ordem decrescente), salvo em ranking.txt
- *
- * Compilar (MinGW, raylib instalada em C:\raylib):
- *   gcc jogo.c -o jogo.exe -lraylib -lopengl32 -lgdi32 -lwinmm
- *   (se estiver usando o pacote w64devkit do raylib, ajuste -I e -L conforme sua instalacao)
- *
- * Controles: WASD ou setas para mover | ENTER para iniciar/voltar | R para ver ranking
+ *  - Bubble Sort para ordenar os itens da sala por distancia ate o jogador
  */
 
 #include "raylib.h"
@@ -32,7 +24,6 @@
 #define PONTOS_SALA      200
 #define PONTOS_VIDA_FIM  500
 
-/* ===================== ESTRUTURAS ===================== */
 
 typedef enum {
     ESTADO_MENU,
@@ -42,7 +33,7 @@ typedef enum {
     ESTADO_RANKING
 } EstadoJogo;
 
-/* No da lista de itens de uma sala */
+
 typedef struct Item {
     Vector2 pos;
     float raio;
@@ -51,7 +42,7 @@ typedef struct Item {
     struct Item *prox;
 } Item;
 
-/* No da lista de inimigos de uma sala */
+
 typedef struct Inimigo {
     Rectangle rect;
     float vel;
@@ -65,8 +56,8 @@ typedef struct Sala {
     int id;
     char nome[48];
     Color cor;
-    Item *itens;                 /* lista de itens */
-    Inimigo *inimigos;           /* lista de inimigos */
+    Item *itens;                 
+    Inimigo *inimigos;           
     Rectangle obstaculos[MAX_OBSTACULOS];
     int numObstaculos;
     int itensTotal;
@@ -80,7 +71,7 @@ typedef struct {
     int vidas;
     int pontuacao;
     int itensColetados;
-    float invencivel;            /* tempo restante de invencibilidade */
+    float invencivel;            
 } Jogador;
 
 typedef struct {
@@ -93,11 +84,11 @@ typedef struct {
     int ultimaPontuacao;
 } Jogo;
 
-/* Posicao inicial do jogador e porta de saida */
+
 static const Vector2 INICIO_JOGADOR = { 50.0f, 300.0f };
 static const Rectangle PORTA = { 765.0f, 260.0f, 35.0f, 120.0f };
 
-/* ===================== Funcoes ===================== */
+
 
 void inicializarJogo(Jogo *jogo);
 Sala *criarListaSalas(void);
@@ -111,7 +102,7 @@ void ordenarRanking(int v[], int n);
 void verificarResultado(Jogo *jogo);
 void liberarListaSalas(Sala *inicio);
 
-/* Auxiliares */
+
 static Sala *criarSala(int id, const char *nome, Color cor);
 static void adicionarItem(Sala *sala, float x, float y, const char *nome);
 static void adicionarInimigo(Sala *sala, float x, float y, float vel, bool horizontal, float min, float max);
@@ -126,8 +117,11 @@ static void registrarPontuacao(Jogo *jogo, int pontos);
 static void exibirHUD(const Jogo *jogo);
 static void exibirRanking(const Jogo *jogo);
 static void exibirTelaTexto(const char *titulo, const char *linha1, const char *linha2, Color cor);
+static float distanciaQuadrada(const Item *item, const Jogador *jogador);
+static int ordenarItensPorDistancia(const Sala *sala, const Jogador *jogador, const Item *ordenados[]);
+static void exibirItemMaisProximo(const Jogo *jogo);
 
-/* ===================== LISTAS: CRIACAO ===================== */
+
 
 static Sala *criarSala(int id, const char *nome, Color cor)
 {
@@ -142,7 +136,7 @@ static Sala *criarSala(int id, const char *nome, Color cor)
     return s;
 }
 
-/* Insere no INICIO da lista de itens da sala */
+
 static void adicionarItem(Sala *sala, float x, float y, const char *nome)
 {
     Item *novo = (Item *)calloc(1, sizeof(Item));
@@ -156,7 +150,7 @@ static void adicionarItem(Sala *sala, float x, float y, const char *nome)
     sala->itensTotal++;
 }
 
-/* Insere no INICIO da lista de inimigos da sala */
+
 static void adicionarInimigo(Sala *sala, float x, float y, float vel, bool horizontal, float min, float max)
 {
     Inimigo *novo = (Inimigo *)calloc(1, sizeof(Inimigo));
@@ -177,7 +171,7 @@ static void adicionarObstaculo(Sala *sala, float x, float y, float w, float h)
     }
 }
 
-/* Cria a lista encadeada de salas e retorna o primeiro no */
+
 Sala *criarListaSalas(void)
 {
     Sala *s1 = criarSala(1, "Salao Principal", (Color){ 70, 50, 40, 255 });
@@ -225,7 +219,7 @@ Sala *criarListaSalas(void)
     adicionarInimigo(s5, 450, 100, 220.0f, false, 70, 540);
     adicionarInimigo(s5, 550, 540, 240.0f, false, 70, 540);
 
-    /* Encadeia as salas */
+    
     s1->prox = s2;
     s2->prox = s3;
     s3->prox = s4;
@@ -235,7 +229,7 @@ Sala *criarListaSalas(void)
     return s1;
 }
 
-/* ===================== LISTAS: LIBERACAO ===================== */
+
 
 void liberarListaSalas(Sala *inicio)
 {
@@ -261,7 +255,7 @@ void liberarListaSalas(Sala *inicio)
     }
 }
 
-/* ===================== LOGICA DO JOGO ===================== */
+
 
 static void reposicionarJogador(Jogador *jogador)
 {
@@ -310,14 +304,14 @@ void movimentarJogador(Jogo *jogo, float dt)
     if (IsKeyDown(KEY_DOWN)  || IsKeyDown(KEY_S)) dy += 1.0f;
     if (IsKeyDown(KEY_UP)    || IsKeyDown(KEY_W)) dy -= 1.0f;
 
-    /* Eixo X */
+    
     Rectangle teste = j->rect;
     teste.x += dx * j->velocidade * dt;
     if (teste.x < 0) teste.x = 0;
     if (teste.x + teste.width > LARGURA) teste.x = LARGURA - teste.width;
     if (!colideComObstaculos(jogo->atual, teste)) j->rect.x = teste.x;
 
-    /* Eixo Y */
+    
     teste = j->rect;
     teste.y += dy * j->velocidade * dt;
     if (teste.y < HUD_ALTURA) teste.y = HUD_ALTURA;
@@ -385,9 +379,9 @@ void avancarSala(Jogo *jogo)
     }
 }
 
-/* ===================== RANKING ===================== */
 
-/* Ordena em ordem DECRESCENTE */
+
+
 void ordenarRanking(int v[], int n)
 {
     for (int i = 0; i < n - 1; i++) {
@@ -437,7 +431,7 @@ static void registrarPontuacao(Jogo *jogo, int pontos)
     salvarRanking(jogo);
 }
 
-/* ===================== RESULTADO ===================== */
+
 
 void verificarResultado(Jogo *jogo)
 {
@@ -449,7 +443,7 @@ void verificarResultado(Jogo *jogo)
         return;
     }
 
-    /* Vitoria: sala final concluida (Pedra Filosofal coletada) */
+    
     if (jogo->atual->prox == NULL && salaConcluida(jogo->atual)) {
         atualizarPontuacao(j, j->vidas * PONTOS_VIDA_FIM);
         jogo->estado = ESTADO_VITORIA;
@@ -457,7 +451,7 @@ void verificarResultado(Jogo *jogo)
     }
 }
 
-/* ===================== DESENHO ===================== */
+
 
 static void exibirHUD(const Jogo *jogo)
 {
@@ -469,6 +463,56 @@ static void exibirHUD(const Jogo *jogo)
     DrawText(TextFormat("Sala %d: %s", jogo->atual->id, jogo->atual->nome), 470, 16, 18, RAYWHITE);
 }
 
+
+
+#define MAX_ITENS_SALA 8
+
+
+static float distanciaQuadrada(const Item *item, const Jogador *jogador)
+{
+    float dx = item->pos.x - (jogador->rect.x + jogador->rect.width / 2);
+    float dy = item->pos.y - (jogador->rect.y + jogador->rect.height / 2);
+    return dx * dx + dy * dy;
+}
+
+
+static int ordenarItensPorDistancia(const Sala *sala, const Jogador *jogador,
+                                    const Item *ordenados[])
+{
+    int n = 0;
+    for (const Item *it = sala->itens; it != NULL && n < MAX_ITENS_SALA; it = it->prox) {
+        if (!it->coletado) ordenados[n++] = it;
+    }
+
+    for (int i = 0; i < n - 1; i++) {
+        bool trocou = false;
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (distanciaQuadrada(ordenados[j], jogador) >
+                distanciaQuadrada(ordenados[j + 1], jogador)) {
+                const Item *tmp = ordenados[j];
+                ordenados[j] = ordenados[j + 1];
+                ordenados[j + 1] = tmp;
+                trocou = true;
+            }
+        }
+        if (!trocou) break;
+    }
+    return n;
+}
+
+static void exibirItemMaisProximo(const Jogo *jogo)
+{
+    const Item *ordenados[MAX_ITENS_SALA];
+    int n = ordenarItensPorDistancia(jogo->atual, &jogo->jogador, ordenados);
+    if (n == 0) return;
+
+    const Item *alvo = ordenados[0];
+    Vector2 centro = { jogo->jogador.rect.x + jogo->jogador.rect.width / 2,
+                       jogo->jogador.rect.y + jogo->jogador.rect.height / 2 };
+    DrawLineV(centro, alvo->pos, Fade(RAYWHITE, 0.4f));
+    DrawText(TextFormat("Item mais proximo: %s", alvo->nome), 15, ALTURA - 22, 18, RAYWHITE);
+}
+
 void exibirCenario(const Jogo *jogo)
 {
     const Sala *sala = jogo->atual;
@@ -476,20 +520,20 @@ void exibirCenario(const Jogo *jogo)
 
     ClearBackground(sala->cor);
 
-    /* Obstaculos */
+    
     for (int i = 0; i < sala->numObstaculos; i++) {
         DrawRectangleRec(sala->obstaculos[i], (Color){ 110, 110, 110, 255 });
         DrawRectangleLinesEx(sala->obstaculos[i], 2, DARKGRAY);
     }
 
-    /* Porta (ou saida final) */
+    
     if (sala->prox != NULL) {
         Color corPorta = salaConcluida(sala) ? GREEN : MAROON;
         DrawRectangleRec(PORTA, corPorta);
         DrawText(salaConcluida(sala) ? "ABERTA" : "FECHADA", 700, 390, 14, RAYWHITE);
     }
 
-    /* Itens */
+    
     for (const Item *it = sala->itens; it != NULL; it = it->prox) {
         if (!it->coletado) {
             Color c = (sala->prox == NULL) ? RED : GOLD;   /* Pedra Filosofal em vermelho */
@@ -500,7 +544,7 @@ void exibirCenario(const Jogo *jogo)
         }
     }
 
-    /* Inimigos */
+    
     for (const Inimigo *in = sala->inimigos; in != NULL; in = in->prox) {
         DrawRectangleRec(in->rect, (Color){ 30, 120, 30, 255 });
         DrawRectangleLinesEx(in->rect, 2, BLACK);
@@ -508,7 +552,7 @@ void exibirCenario(const Jogo *jogo)
         DrawCircle((int)(in->rect.x + 21), (int)(in->rect.y + 11), 3, RED);
     }
 
-    /* Jogador (Harry): pisca durante a invencibilidade */
+    
     bool visivel = (j->invencivel <= 0.0f) || (((int)(j->invencivel * 10.0f)) % 2 == 0);
     if (visivel) {
         DrawRectangleRec(j->rect, (Color){ 120, 20, 20, 255 });             /* tunica */
@@ -517,6 +561,7 @@ void exibirCenario(const Jogo *jogo)
         DrawCircleLines((int)(j->rect.x + 19), (int)(j->rect.y + 9), 3, BLACK);
     }
 
+    exibirItemMaisProximo(jogo);
     exibirHUD(jogo);
 }
 
@@ -543,7 +588,7 @@ static void exibirTelaTexto(const char *titulo, const char *linha1, const char *
     DrawText(linha2, LARGURA / 2 - MeasureText(linha2, 20) / 2, 340, 20, LIGHTGRAY);
 }
 
-/* ===================== MAIN ===================== */
+
 
 int main(void)
 {
@@ -557,7 +602,7 @@ int main(void)
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
 
-        /* ---------- ATUALIZACAO ---------- */
+        
         switch (jogo.estado) {
             case ESTADO_MENU:
                 if (IsKeyPressed(KEY_ENTER)) {
@@ -585,7 +630,7 @@ int main(void)
                 break;
         }
 
-        /* ---------- DESENHO ---------- */
+        
         BeginDrawing();
         switch (jogo.estado) {
             case ESTADO_MENU:
