@@ -182,16 +182,20 @@ Sala *criarListaSalas(void)
     adicionarInimigo(s1, 380, 450, 140.0f, false, 350, 560);
     adicionarInimigo(s1, 600, 250, 150.0f, true, 345, 750);
     
+    
 
     Sala *s2 = criarSala(2, "Biblioteca", (Color){ 55, 40, 70, 255 });
     adicionarItem(s2, 150, 130, "Livro de Feiticos");
     adicionarItem(s2, 750, 500, "Pocao");
     adicionarItem(s2, 680, 120, "Pergaminho");
-    adicionarObstaculo(s2, 220, 200, 200, 30);
+    adicionarObstaculo(s2, 220, 200, 250, 30);
     adicionarObstaculo(s2, 450, 400, 700, 30);
-    adicionarInimigo(s2, 110, 100, 150.0f, false, 70, 400);
-    adicionarInimigo(s2, 550, 450, 175.0f, true, 300, 720);
-    adicionarInimigo(s2, 650, 550, 200.0f, true, 300, 720);
+    adicionarObstaculo(s2, 450, 200, 30, 200);
+    adicionarInimigo(s2, 180, 100, 150.0f, false, 50, 200);
+    adicionarInimigo(s2, 500, 100, 180.0f, false, 50, 200);
+    adicionarInimigo(s2, 550, 450, 175.0f, true, 450, 760);
+    adicionarInimigo(s2, 600, 500, 400.0f, true, 300, 760);
+    adicionarInimigo(s2, 650, 550, 200.0f, true, 450, 760);
 
     Sala *s3 = criarSala(3, "Corredor do Cao de Tres Cabecas", (Color){ 60, 35, 35, 255 });
     adicionarItem(s3, 330, 130, "Flauta");
@@ -201,23 +205,45 @@ Sala *criarListaSalas(void)
     adicionarObstaculo(s3, 580, 20, 40, 480);
     adicionarInimigo(s3, 320, 300, 250.0f, false, 70, 550);
     adicionarInimigo(s3, 500, 300, 350.0f, false, 70, 550);
-    adicionarInimigo(s3, 320, 130, 250.0f, true, 270, 550);
+    adicionarInimigo(s3, 320, 130, 450.0f, true, 270, 550);
+    adicionarInimigo(s3, 450, 530, 400.0f, true, 440, 770);
 
     Sala *s4 = criarSala(4, "Sala do Xadrez de Bruxo", (Color){ 40, 45, 55, 255 });
-    adicionarItem(s4, 180, 540, "Peao de Xadrez");
+    adicionarItem(s4, 176, 545, "Peao de Xadrez");
     adicionarItem(s4, 420, 100, "Chave Alada");
-    adicionarItem(s4, 700, 300, "Rei Branco");
-    adicionarObstaculo(s4, 300, 200, 150, 150);
-    adicionarObstaculo(s4, 560, 420, 150, 100);
-    adicionarInimigo(s4, 120, 150, 200.0f, true, 100, 700);
-    adicionarInimigo(s4, 120, 450, 230.0f, true, 100, 700);
+    adicionarItem(s4, 700, 340, "Rei Branco");
+    adicionarObstaculo(s4, 150, 120, 50, 400);
+    adicionarObstaculo(s4, 500, 50, 50, 200);
+    adicionarObstaculo(s4, 500, 420, 50, 400);
+    adicionarInimigo(s4, 120, 70, 397.0f, true, 100, 470);
+    adicionarInimigo(s4, 120, 530, 405.0f, true, 100, 470);
+    adicionarInimigo(s4, 250, 530, 405.0f, false, 60, 550);
+    adicionarInimigo(s4, 380, 279, 405.0f, false, 60, 550);
+    adicionarInimigo(s4, 210, 335, 405.0f, true, 200, 750);
+    adicionarInimigo(s4, 470, 530, 452.0f, false, 100, 470);
+    adicionarInimigo(s4, 555, 530, 471.0f, false, 100, 470);
 
     Sala *s5 = criarSala(5, "Camara da Pedra Filosofal", (Color){ 30, 30, 60, 255 });
-    adicionarItem(s5, 650, 320, "Pedra Filosofal");
-    adicionarObstaculo(s5, 100, 20, 40, 400);
-    adicionarObstaculo(s5, 100, 480, 40, 400);
-    adicionarInimigo(s5, 450, 100, 220.0f, false, 70, 540);
-    adicionarInimigo(s5, 550, 540, 240.0f, false, 70, 540);
+    adicionarItem(s5, 752, 320, "Pedra Filosofal");
+    adicionarObstaculo(s5, 95, 50, 40, 250);
+    adicionarObstaculo(s5, 95, 400, 40, 350);
+    adicionarObstaculo(s5, 690, 100, 40, 450);
+    adicionarInimigo(s5, 140, 100, 120.0f, false, 70, 540);
+    adicionarInimigo(s5, 180, 100, 300.0f, false, 70, 540);
+    adicionarInimigo(s5, 220, 100, 203.0f, false, 70, 540);
+    adicionarInimigo(s5, 260, 100, 332.0f, false, 70, 540);
+    adicionarInimigo(s5, 300, 100, 503.0f, false, 70, 540);
+    adicionarInimigo(s5, 340, 100, 100.0f, false, 70, 540);
+    adicionarInimigo(s5, 380, 100, 345.0f, false, 70, 540);
+    adicionarInimigo(s5, 420, 100, 200.0f, false, 70, 540);
+    adicionarInimigo(s5, 460, 100, 150.0f, false, 70, 540);
+    adicionarInimigo(s5, 500, 100, 50.0f, false, 70, 540);
+    adicionarInimigo(s5, 540, 100, 250.0f, false, 70, 540);
+    adicionarInimigo(s5, 580, 100, 500.0f, false, 70, 540);
+    adicionarInimigo(s5, 620, 100, 50.0f, false, 70, 540);
+    adicionarInimigo(s5, 660, 100, 390.0f, false, 70, 540);
+    adicionarInimigo(s5, 150, 550, 50.0f, true, 150, 725);
+    adicionarInimigo(s5, 150, 70, 50.0f, true, 150, 725);
 
     
     s1->prox = s2;
@@ -588,8 +614,6 @@ static void exibirTelaTexto(const char *titulo, const char *linha1, const char *
     DrawText(linha2, LARGURA / 2 - MeasureText(linha2, 20) / 2, 340, 20, LIGHTGRAY);
 }
 
-
-
 int main(void)
 {
     InitWindow(LARGURA, ALTURA, "Harry Potter: A Busca pela Pedra Filosofal");
@@ -641,8 +665,8 @@ int main(void)
                 break;
 
             case ESTADO_JOGANDO:
-                exibirCenario(&jogo);
-                break;
+        exibirCenario(&jogo);
+        break;
 
             case ESTADO_VITORIA:
                 exibirTelaTexto("VITORIA!",
