@@ -581,7 +581,7 @@ void exibirCenario(const Jogo *jogo)
     
     bool visivel = (j->invencivel <= 0.0f) || (((int)(j->invencivel * 10.0f)) % 2 == 0);
     if (visivel) {
-        DrawRectangleRec(j->rect, (Color){ 120, 20, 20, 255 });             /* tunica */
+        DrawRectangleRec(j->rect, (Color){ 240, 200, 160, 255 });             /* tunica */
         DrawCircle((int)(j->rect.x + 15), (int)(j->rect.y + 9), 8, (Color){ 240, 200, 160, 255 }); /* rosto */
         DrawCircleLines((int)(j->rect.x + 11), (int)(j->rect.y + 9), 3, BLACK);  /* oculos */
         DrawCircleLines((int)(j->rect.x + 19), (int)(j->rect.y + 9), 3, BLACK);
