@@ -581,10 +581,26 @@ void exibirCenario(const Jogo *jogo)
     
     bool visivel = (j->invencivel <= 0.0f) || (((int)(j->invencivel * 10.0f)) % 2 == 0);
     if (visivel) {
-        DrawRectangleRec(j->rect, (Color){ 240, 200, 160, 255 });             /* tunica */
-        DrawCircle((int)(j->rect.x + 15), (int)(j->rect.y + 9), 8, (Color){ 240, 200, 160, 255 }); /* rosto */
-        DrawCircleLines((int)(j->rect.x + 11), (int)(j->rect.y + 9), 3, BLACK);  /* oculos */
-        DrawCircleLines((int)(j->rect.x + 19), (int)(j->rect.y + 9), 3, BLACK);
+        int hx = (int)j->rect.x, hy = (int)j->rect.y;
+
+        /* corpo */
+        DrawRectangleRec(j->rect, (Color){ 240, 200, 160, 255 });
+        DrawCircle(hx + 15, hy + 9, 8, (Color){ 240, 200, 160, 255 });
+
+        /* cabelo */
+        DrawRectangle(hx, hy, 30, 6, BLACK);
+        DrawRectangle(hx, hy + 6, 4, 5, BLACK);
+        DrawRectangle(hx + 8, hy + 6, 8, 2, BLACK);
+
+        /* oculos */
+        DrawRing((Vector2){ hx + 10.0f, hy + 12.0f }, 3.2f, 4.6f, 0.0f, 360.0f, 24, BLACK);
+        DrawRing((Vector2){ hx + 20.0f, hy + 12.0f }, 3.2f, 4.6f, 0.0f, 360.0f, 24, BLACK);
+        DrawLine(hx + 14, hy + 12, hx + 16, hy + 12, BLACK);
+
+        /* cicatriz  */
+        DrawLineEx((Vector2){ hx + 28.0f, hy + 7.0f },  (Vector2){ hx + 26.0f, hy + 10.0f }, 2.0f, RED);
+        DrawLineEx((Vector2){ hx + 26.0f, hy + 10.0f }, (Vector2){ hx + 28.0f, hy + 10.0f }, 2.0f, RED);
+        DrawLineEx((Vector2){ hx + 28.0f, hy + 10.0f }, (Vector2){ hx + 26.0f, hy + 13.0f }, 2.0f, RED);
     }
 
     exibirItemMaisProximo(jogo);
